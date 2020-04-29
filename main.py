@@ -74,7 +74,7 @@ class Graph:
         # Find edges which are not connected
         for node, neighbors in self.graph.items():
             for n in self.vertices:
-                if n is not node and n not in neighbors:
+                if n != node and n not in neighbors:
                     temp_arr = [node, n]
                     temp_arr.sort()
                     if temp_arr not in self.not_connected:
@@ -82,19 +82,18 @@ class Graph:
 
     def findTriangles(self):
         # Find number of triangles for all unconnected vertices
-        for i in range(len(self.not_connected)):
-            self.find1(self.not_connected[i][0], self.not_connected[i][1], i)
+        for n in self.not_connected:
+            self.find1(n[0], n[1])
 
-    def find1(self, s, f, i):
+    def find1(self, s, f):
         # Find number of triangles for given vertices
-        for n1 in self.graph[s]:
-            for n2 in self.graph[n1]:
-                if s is n2:
-                    name = str(s) + "-" + str(f)
-                    if name in self.triangles_number:
-                        self.triangles_number[name] += 1
-                    else:
-                        self.triangles_number[name] = 1
+        name = str(s) + "-" + str(f)
+        self.triangles_number[name] = 0
+
+        for n in self.graph[s]:
+            if f in self.graph[n]:
+                if name in self.triangles_number:
+                    self.triangles_number[name] += 1
 
     def findKMaxTringles(self):
         # Find k shortcut edges with maximum number of triangles
@@ -111,47 +110,33 @@ class Graph:
 
 
     def solve3(self):
-        k = self.findK()
-        indepS = self.independetSet(k, 0)
+        n = self.findN()
+        self.arbitrarySet(n)
 
-        self.combineIndS(indepS)
         print("Solution for i=3:")
         print(self.solution3)
         print()
 
-    def findK(self):
-        # Find k (number of independent vertices) from our k
-        # x**2 - x - 6*k = 0
-        c = 6 * self.k
+    def findN(self):
+        # Find number of vertices in C from our k
+        # x** - x -2*k = 0
+        c = 2 * self.k
         D = math.sqrt(1 + 4*c)
         x1 = (1 + D) / 2
-        return x1
+        return int(x1)
 
-    def independetSet(self, k, iter):
-        # Randomly find Maximal Independent Set: set without adjacent vertices
-
-        random_node = random.choice(self.vertices)
-        available_nodes = set(self.vertices).difference(
-            set([random_node]).union(set(self.graph[random_node])))
-        indep_nodes = [random_node]
-        while available_nodes:
-            node = random.choice(list(available_nodes))
-            indep_nodes.append(node)
-            available_nodes = available_nodes.difference(
-                set([node]).union(set(self.graph[node])))
-        if len(indep_nodes) >= k or iter > 100:
-            return indep_nodes
-        else:
-            return self.independetSet(k, iter+1)
-
-    def combineIndS(self, indepS):
-        for u in indepS:
-            for v in indepS:
-                if u != v and len(self.solution3) <= self.k:
+    def arbitrarySet(self, n):
+        # Select arbitrary set with n vertices and make k edges
+        c = random.sample(self.vertices, max(3, n))
+        for u in c:
+            for v in c:
+                if u != v:
                     temp = [u, v]
                     temp.sort()
                     if temp not in self.solution3:
                         self.solution3.append(temp)
+        if len(self.solution3) > self.k:
+            self.solution3 = self.solution3[:k]
 
 
     def solve2(self):
@@ -165,9 +150,9 @@ class Graph:
     def findS(self):
         # Find set S of vertices by taking random number <= k from G
         lenS = random.randint(1, self.k)
-        self.s = random.sample(self.vertices, min(k, self.v))
+        # self.s = random.sample(self.vertices, min(k, self.v))
+        self.s = random.sample(self.vertices, min(lenS, self.v))
 
-        # self.s = self.vertices[:lenS]
 
     def algo2(self):
         # Implemenation of Algorithm 2
@@ -259,6 +244,8 @@ class Graph:
     def calculateTriangles(self, setI):
         # Calculate number of triangles in G (V, E+I)
         triangles = 0
+        trianglesSet = []
+
         for u in self.vertices:
             for v in self.vertices:
                 for w in self.vertices:
@@ -273,9 +260,13 @@ class Graph:
                         if (temp1 in setI or v in self.graph[u]) and \
                             (temp2 in setI or w in self.graph[v]) and \
                             (temp3 in setI or w in self.graph[u]):
-                            triangles += 1
-        return triangles
 
+                            tempTri = [u, v, w]
+                            tempTri.sort()
+                            if tempTri not in trianglesSet:
+                                triangles += 1
+                                trianglesSet.append(tempTri)
+        return triangles
 
 
 def example(graph):
@@ -289,18 +280,12 @@ def example(graph):
     graph.addEdge(7, 8)
     graph.addEdge(8, 0)
 
-    # graph.addEdge(0, 1)
-    # graph.addEdge(0, 4)
-    # graph.addEdge(4, 3)
-    # graph.addEdge(2, 3)
-    # graph.addEdge(1, 2)
-    # graph.addEdge(1, 3)
-
 
 if __name__ == "__main__":
-    k = 18
     # vertices = 10
     # edges = 20
+
+    k = 18
 
     graph = Graph()
     example(graph)
