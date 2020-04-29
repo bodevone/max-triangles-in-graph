@@ -17,8 +17,10 @@ class Graph:
         self.solution3 = []
         self.s = []
 
+        self.choice = 0
+
     def generateGraph(self, v, e):
-        self.v = v
+        # Generate random graph with v Vertices and e Edges
         for i in range(v):
             if e > 0:
                 if e > 5:
@@ -42,19 +44,22 @@ class Graph:
         if v not in self.vertices:
             self.vertices.append(v)
         self.e += 1
+        self.v = len(self.vertices)
 
     def setK(self, k):
-        kMax = self.v*(self.v-1) / 2 - self.e
+        kMax = int(self.v*(self.v-1) / 2 - self.e)
         print("Max value of k: " + str(kMax))
         if k > kMax:
             self.k = kMax
         else:
             self.k = k
+        print(f"k: {self.k}")
 
     def printGraph(self):
-        print("GRAPH")
+        print("\nGRAPH")
         for key, value in self.graph.items():
             print(key, value)
+        print()
 
 
 
@@ -112,6 +117,7 @@ class Graph:
         self.combineIndS(indepS)
         print("Solution for i=3:")
         print(self.solution3)
+        print()
 
     def findK(self):
         # Find k (number of independent vertices) from our k
@@ -159,7 +165,9 @@ class Graph:
     def findS(self):
         # Find set S of vertices by taking random number <= k from G
         lenS = random.randint(1, self.k)
-        self.s = self.vertices[:lenS]
+        self.s = random.sample(self.vertices, min(k, self.v))
+
+        # self.s = self.vertices[:lenS]
 
     def algo2(self):
         # Implemenation of Algorithm 2
@@ -222,24 +230,81 @@ class Graph:
 
         return setI1 + setI2 + setI3
 
+    def findMaxTrianglesI(self):
+        # Select I (1, 2 or 3) with the most number of triangles
+        triangles1 = self.calculateTriangles(self.solution1)
+        triangles2 = self.calculateTriangles(self.solution2)
+        triangles3 = self.calculateTriangles(self.solution3)
+
+        print(f"Number of triangles when i=1: {triangles1}")
+        print(f"Number of triangles when i=2: {triangles2}")
+        print(f"Number of triangles when i=3: {triangles3}")
+
+        if triangles1 > triangles2 and triangles2 > triangles3:
+            self.choice = 1
+        elif triangles2 > triangles1 and triangles2 > triangles3:
+            self.choice = 2
+        else:
+            self.choice = 3
+
+        if self.choice == 1:
+            print(f"Max triangles in i=1 with I: {self.solution1}")
+        elif self.choice == 2:
+            print(f"Max triangles in i=2 with I: {self.solution2}")
+        else:
+            print(f"Max triangles in i=3 with I: {self.solution3}")
+
+
+
+    def calculateTriangles(self, setI):
+        # Calculate number of triangles in G (V, E+I)
+        triangles = 0
+        for u in self.vertices:
+            for v in self.vertices:
+                for w in self.vertices:
+                    if u != v and v != w:
+                        temp1 = [u, v]
+                        temp1.sort()
+                        temp2 = [v, w]
+                        temp2.sort()
+                        temp3 = [u, w]
+                        temp3.sort()
+
+                        if (temp1 in setI or v in self.graph[u]) and \
+                            (temp2 in setI or w in self.graph[v]) and \
+                            (temp3 in setI or w in self.graph[u]):
+                            triangles += 1
+        return triangles
+
+
 
 def example(graph):
     graph.addEdge(0, 1)
-    graph.addEdge(0, 4)
-    graph.addEdge(4, 3)
-    graph.addEdge(2, 3)
     graph.addEdge(1, 2)
-    graph.addEdge(1, 3)
+    graph.addEdge(2, 3)
+    graph.addEdge(3, 4)
+    graph.addEdge(4, 5)
+    graph.addEdge(5, 6)
+    graph.addEdge(6, 7)
+    graph.addEdge(7, 8)
+    graph.addEdge(8, 0)
+
+    # graph.addEdge(0, 1)
+    # graph.addEdge(0, 4)
+    # graph.addEdge(4, 3)
+    # graph.addEdge(2, 3)
+    # graph.addEdge(1, 2)
+    # graph.addEdge(1, 3)
 
 
 if __name__ == "__main__":
-    k = 10
-    vertices = 10
-    edges = 20
+    k = 18
+    # vertices = 10
+    # edges = 20
 
     graph = Graph()
-    # example(graph)
-    graph.generateGraph(vertices, edges)
+    example(graph)
+    # graph.generateGraph(vertices, edges)
     graph.setK(k)
 
     graph.printGraph()
@@ -247,3 +312,5 @@ if __name__ == "__main__":
     graph.solve1()
     graph.solve2()
     graph.solve3()
+
+    graph.findMaxTrianglesI()
