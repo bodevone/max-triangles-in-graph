@@ -67,8 +67,10 @@ class Graph:
         self.findNotConnected()
         self.findTriangles()
         self.findKMaxTringles()
-        print("Solution for i=1:")
-        print(self.solution1)
+        # print("Solution for i=1:")
+        print(f"I={self.solution1}")
+        print(f"T(G)={self.calculateTriangles(self.solution1)}")
+        # print(self.solution1)
 
     def findNotConnected(self):
         # Find edges which are not connected
@@ -112,9 +114,11 @@ class Graph:
     def solve3(self):
         n = self.findN()
         self.arbitrarySet(n)
+        print(f"I={self.solution3}")
+        print(f"T(G)={self.calculateTriangles(self.solution3)}")
 
-        print("Solution for i=3:")
-        print(self.solution3)
+        # print("Solution for i=3:")
+        # print(self.solution3)
         print()
 
     def findN(self):
@@ -144,8 +148,11 @@ class Graph:
 
         setI = self.algo2()
         self.solution2 = setI
-        print("Solution for i=2:")
-        print(self.solution2)
+
+        print(f"I={self.solution2}")
+        print(f"T(G)={self.calculateTriangles(self.solution2)}")
+        # print("Solution for i=2:")
+        # print(self.solution2)
 
     def findS(self):
         # Find set S of vertices by taking random number <= k from G
@@ -225,7 +232,7 @@ class Graph:
         print(f"Number of triangles when i=2: {triangles2}")
         print(f"Number of triangles when i=3: {triangles3}")
 
-        if triangles1 > triangles2 and triangles2 > triangles3:
+        if triangles1 > triangles2 and triangles1 > triangles3:
             self.choice = 1
         elif triangles2 > triangles1 and triangles2 > triangles3:
             self.choice = 2
