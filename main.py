@@ -48,7 +48,7 @@ class Graph:
 
     def setK(self, k):
         kMax = int(self.v*(self.v-1) / 2 - self.e)
-        print("Max value of k: " + str(kMax))
+        print(f"Max value of k: {kMax}"))
         if k > kMax:
             self.k = kMax
         else:
